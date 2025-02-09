@@ -43,7 +43,7 @@ class Message {
     Role? role,
     StringBuffer? message,
     List<String>? imageUrls,
-    DateTime? time,
+    DateTime? time, required timeSent,
   }) {
     return Message(
         messageId: messageId ?? this.messageId,

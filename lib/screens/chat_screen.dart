@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             title: Text(message.message.toString()),
                           );
                         })),
-                      const BottemChatField()
+                       BottomChatField(chatProvider:chatProvider ,)
                  ],
               ),
             ))
