@@ -147,10 +147,10 @@ class ChatProvider extends ChangeNotifier {
     //get the images url
     List<String> imagesUrls = getImagesUrl(isTextOnly: isTextOnly);
 
-    //user message
-
+    //user message id
+    final userMessageId  = const Uuid().v4();
     final userMessage = Message(
-        messageId: '',
+        messageId: userMessageId,
         chatId: chatId,
         role: Role.user,
         message: StringBuffer(message),
@@ -190,9 +190,13 @@ class ChatProvider extends ChangeNotifier {
     // get content
 
     final content = await getContent(message: message, isTextOnly: isTextOnly);
+
+    //assistent message id
+      final modelMessageId = const Uuid().v4();
     //assistant message
 
     final assistantMessage = userMessage.copyWith(
+      messageId: modelMessageId,
       role: Role.assistant,
       message: StringBuffer(),
       timeSent: DateTime.now(),
@@ -238,10 +242,10 @@ class ChatProvider extends ChangeNotifier {
 
       final prompt = TextPart(message);
       final imageParts = imageBytes
-          .map((byte) => DataPart('image/jpg', Uint8List.fromList(byte)))
+          .map((byte) => DataPart('image/jpeg', Uint8List.fromList(byte)))
           .toList();
 
-      return Content.model([prompt, ...imageParts]);
+      return Content.multi([prompt, ...imageParts]);
     }
   }
 
