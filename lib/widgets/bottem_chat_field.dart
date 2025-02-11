@@ -78,7 +78,9 @@ class _BottomChatFieldState extends State<BottomChatField> {
               children: [
                 IconButton(
                     onPressed: () {
+                      print('--------see error---$hasImages');
                       if (hasImages) {
+                        print('-------- error---');
                         //show the delete dialog
                         showMyAnimatedDialog(context:context,
                             title: 'Delete Images',
@@ -88,6 +90,7 @@ class _BottomChatFieldState extends State<BottomChatField> {
                             widget.chatProvider.setImagesFileList(listValue: []);
                             });
                       } else {
+                        print('---------pick image');
                         pickImage();
                       }
                     },
@@ -100,7 +103,10 @@ class _BottomChatFieldState extends State<BottomChatField> {
                       focusNode: textFieldFocus,
                       controller: _textEditingController,
                       textInputAction: TextInputAction.send,
-                      onSubmitted: (String value) {
+                      onSubmitted:widget.chatProvider.isLoading
+
+
+                     ? null: (String value) {
                         if (value.isNotEmpty) {
                           sendChatMessage(
                               message: _textEditingController.text,
@@ -116,9 +122,12 @@ class _BottomChatFieldState extends State<BottomChatField> {
                           )),
                     )),
                 GestureDetector(
-                  onTap: () {
+                  onTap: widget.chatProvider.isLoading ? null : () {
                     //send the message
+                    print('-----------image send');
+                    print('---------------texteditingimage-----${_textEditingController.text.isNotEmpty}');
                     if (_textEditingController.text.isNotEmpty) {
+                      print('---------------texteditingimage-----${_textEditingController.text.isNotEmpty}');
                       sendChatMessage(
                           message: _textEditingController.text,
                           chatProvider: widget.chatProvider,

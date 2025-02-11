@@ -12,7 +12,7 @@ class PreviewImagesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(builder: (value, chatProvider, child) {
+    return Consumer<ChatProvider>(builder: (context, chatProvider, child) {
       final messageToShow =
           message != null ? message!.imageUrls : chatProvider.imageFileList;
       final padding = message != null

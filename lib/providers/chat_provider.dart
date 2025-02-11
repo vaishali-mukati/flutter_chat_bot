@@ -1,6 +1,3 @@
-import 'dart:math';
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -128,6 +125,62 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deletChatMessages({required String chatId}) async {
+    // 1. check if the box is open
+    if (!Hive.isBoxOpen('${Constants.chatMessagesBox}$chatId')) {
+      // open the box
+      await Hive.openBox('${Constants.chatMessagesBox}$chatId');
+
+      // delete all messages in the box
+      await Hive.box('${Constants.chatMessagesBox}$chatId').clear();
+
+      // close the box
+      await Hive.box('${Constants.chatMessagesBox}$chatId').close();
+    } else {
+      // delete all messages in the box
+      await Hive.box('${Constants.chatMessagesBox}$chatId').clear();
+
+      // close the box
+      await Hive.box('${Constants.chatMessagesBox}$chatId').close();
+    }
+
+    // get the current chatId, its its not empty
+    // we check if its the same as the chatId
+    // if its the same we set it to empty
+    if (currentChatId.isNotEmpty) {
+      if (currentChatId == chatId) {
+        setCurrentChatId(newChatId: '');
+        _inChatMessages.clear();
+        notifyListeners();
+      }
+    }
+  }
+
+  Future<void> prepareChatRoom({
+    required bool isNewChat,
+    required String chatID,
+  }) async {
+    if (!isNewChat) {
+      // 1.  load the chat messages from the db
+      final chatHistory = await loadMessagesFromDB(chatId: chatID);
+
+      // 2. clear the inChatMessages
+      _inChatMessages.clear();
+
+      for (var message in chatHistory) {
+        _inChatMessages.add(message);
+      }
+
+      // 3. set the current chat id
+      setCurrentChatId(newChatId: chatID);
+    } else {
+      // 1. clear the inChatMessages
+      _inChatMessages.clear();
+
+      // 2. set the current chat id
+      setCurrentChatId(newChatId: chatID);
+    }
+  }
   //send message to gemini to get the streamed response
   Future<void> sentMessage(
       {required String message, required bool isTextOnly}) async {
@@ -257,6 +310,7 @@ class ChatProvider extends ChangeNotifier {
         imagesUrls.add(image.path);
       }
     }
+    print('--------get image url----$imagesUrls');
     return imagesUrls;
   }
 
